@@ -3,16 +3,7 @@ import AudioPlayer
 
 open class BookZvookMediaItemsController: MediaItemsController {
   override open func navigate(from view: UICollectionViewCell, playImmediately: Bool=false) {
-    //if let indexPath = collectionView?.indexPath(for: view) {
-      //let mediaItem = items.getItem(for: indexPath) as? BookZvookMediaItem {
-
-      //if mediaItem.hasMultipleVersions() {
-        //performSegue(withIdentifier: AudioVersionsController.SegueIdentifier, sender: view)
-      //}
-      //else {
-        performSegue(withIdentifier: AudioItemsController.SegueIdentifier, sender: view)
-      //}
-    //}
+    performSegue(withIdentifier: AudioItemsController.SegueIdentifier, sender: view)
   }
   
   // MARK: Navigation

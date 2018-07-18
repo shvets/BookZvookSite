@@ -23,7 +23,7 @@ class AuthorsLettersTableViewController: UITableViewController {
 
     self.clearsSelectionOnViewWillAppear = false
 
-    title = localizer.localize("Letters")
+    title = localizer.localize("Authors")
 
     #if os(iOS)
       tableView?.backgroundView = activityIndicatorView

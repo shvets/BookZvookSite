@@ -3,8 +3,8 @@ import TVSetKit
 import PageLoader
 
 class GenresTableViewController: UITableViewController {
-  static let SegueIdentifier = " Genres"
-  let CellIdentifier = " GenreTableCell"
+  static let SegueIdentifier = "Genres"
+  let CellIdentifier = "GenreTableCell"
 
   let localizer = Localizer(BookZvookService.BundleId, bundleClass: BookZvookSite.self)
 
@@ -17,9 +17,6 @@ class GenresTableViewController: UITableViewController {
   let pageLoader = PageLoader()
 
   private var items = Items()
-
-  var selectedItem: Item?
-  var parentId: String?
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -36,8 +33,6 @@ class GenresTableViewController: UITableViewController {
     func load() throws -> [Any] {
       var params = Parameters()
       params["requestType"] = "Genres"
-      params["selectedItem"] = self.selectedItem
-      params["parentId"] = self.parentId
 
       return try self.service.dataSource.loadAndWait(params: params)
     }
@@ -88,9 +83,8 @@ class GenresTableViewController: UITableViewController {
            let view = sender as? MediaNameTableCell,
            let indexPath = tableView.indexPath(for: view) {
 
-          destination.params["requestType"] = "Author"
+          destination.params["requestType"] = "Genre Books"
           destination.params["selectedItem"] = items.getItem(for: indexPath)
-          destination.params["parentId"] = parentId
 
           destination.configuration = service.getConfiguration()
         }

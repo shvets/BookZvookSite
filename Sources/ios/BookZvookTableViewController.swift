@@ -34,7 +34,7 @@ open class BookZvookTableViewController: UITableViewController {
       MediaName(name: "Now Listening", imageName: "Now Listening"),
       MediaName(name: "Bookmarks", imageName: "Star"),
       MediaName(name: "History", imageName: "Bookmark"),
-      MediaName(name: "Books", imageName: "Book"),
+      MediaName(name: "New Books", imageName: "Book"),
       MediaName(name: "Authors", imageName: "Mark Twain"),
       MediaName(name: "Genres", imageName: "Comedy"),
       MediaName(name: "Settings", imageName: "Engineering"),
@@ -74,8 +74,8 @@ open class BookZvookTableViewController: UITableViewController {
         case "Now Listening":
           performSegue(withIdentifier: "Now Listening", sender: view)
 
-        case "Books":
-          performSegue(withIdentifier: "Books", sender: view)
+        case "New Books":
+          performSegue(withIdentifier: "New Books", sender: view)
         
         case "Authors":
           performSegue(withIdentifier: "Authors Letters", sender: view)
@@ -131,7 +131,20 @@ open class BookZvookTableViewController: UITableViewController {
             }
           }
 
-//      case "Books":
+      case "New Books":
+        if let destination = segue.destination.getActionController() as? MediaItemsController,
+          let view = sender as? MediaNameTableCell,
+          let indexPath = tableView.indexPath(for: view) {
+
+          let mediaItem = items.getItem(for: indexPath)
+
+          destination.params["requestType"] = mediaItem.name
+          destination.params["parentName"] = localizer.localize(mediaItem.name!)
+
+          destination.configuration = service.getConfiguration()
+        }
+        
+//      case "Genres":
 //        if let destination = segue.destination.getActionController() as? MediaItemsController,
 //          let view = sender as? MediaNameTableCell,
 //          let indexPath = tableView.indexPath(for: view) {

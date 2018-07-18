@@ -39,12 +39,12 @@ class BookZvookDataSource: DataSource {
       
     case "Authors":
       if let letter = params["parentId"] as? String {
-        let authors = try getAuthorsByLetter(letter)
-        
         var list: [Any] = []
         
-        for (author, _) in authors {
-          list.append(["name": author])
+        let authors = try service.getAuthorsByLetter(letter)
+        
+        for (author) in authors {
+            list.append(["name": author.name])
         }
         
         items = Observable.just(adjustItems(list))
@@ -54,17 +54,23 @@ class BookZvookDataSource: DataSource {
       if let letter = params["parentId"] as? String,
          let selectedItem = selectedItem,
          let name = selectedItem.name {
-        let authors = try getAuthorsByLetter(letter)
         
-        let found = authors.filter { $0.key == name }.first
+        var list: [Any] = []
         
-        if let author = found {
-          items = Observable.just(adjustItems(author.value))
+        let authors = try service.getAuthorsByLetter(letter)
+        
+        for (author) in authors {
+          if author.name == name {
+            list = author.books
+            break
+          }
         }
+        
+        items = Observable.just(adjustItems(list))
       }
 
-    case "Books":
-      items = try service.getBooks(page: currentPage).map { result in
+    case "New Books":
+      items = try service.getNewBooks(page: currentPage).map { result in
         let data = result["movies"] as? [Any]
         
         let newItems = self.adjustItems(data!)
@@ -76,6 +82,17 @@ class BookZvookDataSource: DataSource {
       let genres = try service.getGenres()
 
       items = Observable.just(adjustItems(genres))
+      
+    case "Genre Books":
+      if let selectedItem = selectedItem, let url = selectedItem.id {
+        items = try service.getGenreBooks(url, page: currentPage).map { result in
+          let data = result["movies"] as? [Any]
+          
+          let newItems = self.adjustItems(data!)
+          
+          return newItems
+        }
+      }
       
     case "Tracks":
       if let url = params["url"] as? String, !url.isEmpty {
@@ -135,6 +152,13 @@ class BookZvookDataSource: DataSource {
         let track = item as! BookZvookAPI.BooTrack
 
         return MediaItem(name: track.title + ".mp3", id: String(describing: track.url))
+      }
+    }
+    else if let items = items as? [BookZvookAPI.Book] {
+      newItems = transform(items) { item in
+        let item = item as! BookZvookAPI.Book
+        
+        return MediaItem(name: item.title, id: String(describing: item.id))
       }
     }
     else if let items = items as? [[String: Any]] {
@@ -199,26 +223,6 @@ class BookZvookDataSource: DataSource {
     }
 
     return newItem
-  }
-
-  func getAuthorsByLetter(_ letter: String) throws -> [String: [[String: String]]] {
-    //var data = [[String: Any]]()
-
-    let authors = try service.getAuthorsByLetter(letter)
-
-//    for (key, value) in authors {
-//      if let group = value as? [NameClassifier.Item] {
-//        var newGroup: [[String: String]] = []
-//
-//        for el in group {
-//          newGroup.append(["id": el.id, "name": el.name])
-//        }
-//
-//        data.append(["name": key, "items": newGroup])
-//      }
-//    }
-
-    return authors
   }
 
   func getLetters(_ items: [NameClassifier.ItemsGroup]) -> [String] {
