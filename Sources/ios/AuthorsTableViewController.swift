@@ -38,11 +38,6 @@ class AuthorsTableViewController: UITableViewController {
       params["requestType"] = "Authors"
       params["selectedItem"] = self.selectedItem
       params["parentId"] = self.parentId
-
-//      self.pageLoader.enablePagination()
-//      self.pageLoader.pageSize = self.service.getConfiguration()["authorsPageSize"] as! Int
-//
-//      params["currentPage"] = self.pageLoader.currentPage
       
       return try self.service.dataSource.loadAndWait(params: params)
     }

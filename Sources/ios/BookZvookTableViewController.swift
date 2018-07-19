@@ -34,6 +34,7 @@ open class BookZvookTableViewController: UITableViewController {
       MediaName(name: "Now Listening", imageName: "Now Listening"),
       MediaName(name: "Bookmarks", imageName: "Star"),
       MediaName(name: "History", imageName: "Bookmark"),
+      MediaName(name: "Popular Books", imageName: "Briefcase"),
       MediaName(name: "New Books", imageName: "Book"),
       MediaName(name: "Authors", imageName: "Mark Twain"),
       MediaName(name: "Genres", imageName: "Comedy"),

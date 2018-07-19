@@ -13,7 +13,7 @@ class BookZvookDataSource: DataSource {
 
     let request = params["requestType"] as! String
     let currentPage = params["currentPage"] as? Int ?? 1
-    let pageSize = params["pageSize"] as? Int ?? 27
+    let pageSize = params["pageSize"] as? Int ?? 10
     
     switch request {
     case "Bookmarks":
@@ -32,41 +32,31 @@ class BookZvookDataSource: DataSource {
         items = Observable.just(adjustItems(data))
       }
 
+    case "Popular Books":
+      items = try service.getPopularBooks().map { result in
+        return self.adjustItems(result)
+      }
+      
     case "Authors Letters":
       items = try service.getLetters().map { result in
         return self.adjustItems(result)
       }
       
     case "Authors":
-      if let letter = params["parentId"] as? String {
-        var list: [Any] = []
-        
-        let authors = try service.getAuthorsByLetter(letter)
-        
-        for (author) in authors {
-            list.append(["name": author.name])
-        }
-        
-        items = Observable.just(adjustItems(list))
+      if let url = params["parentId"] as? String {
+        items = Observable.just(adjustItems(try service.getAuthors(url)))
       }
 
     case "Author":
-      if let letter = params["parentId"] as? String,
+      if let url = params["parentId"] as? String,
          let selectedItem = selectedItem,
          let name = selectedItem.name {
         
-        var list: [Any] = []
+        let result = try service.getAuthorBooks(url, name: name, page: currentPage, perPage: pageSize)
         
-        let authors = try service.getAuthorsByLetter(letter)
+        let data = result["movies"] as? [Any]
         
-        for (author) in authors {
-          if author.name == name {
-            list = author.books
-            break
-          }
-        }
-        
-        items = Observable.just(adjustItems(list))
+        items = Observable.just(self.adjustItems(data!))
       }
 
     case "New Books":
