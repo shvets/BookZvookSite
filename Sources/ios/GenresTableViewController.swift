@@ -9,7 +9,7 @@ class GenresTableViewController: UITableViewController {
   let localizer = Localizer(BookZvookService.BundleId, bundleClass: BookZvookSite.self)
 
 #if os(iOS)
-  public let activityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+  public let activityIndicatorView = UIActivityIndicatorView(style: .gray)
 #endif
 
   let service = BookZvookService()
