@@ -2,6 +2,7 @@ import UIKit
 import TVSetKit
 import PageLoader
 import AudioPlayer
+import SimpleHttpClient
 
 open class BookZvookTableViewController: UITableViewController {
   //static let SegueIdentifier = "Audio Boo"
@@ -34,7 +35,7 @@ open class BookZvookTableViewController: UITableViewController {
       MediaName(name: "Now Listening", imageName: "Now Listening"),
       MediaName(name: "Bookmarks", imageName: "Star"),
       MediaName(name: "History", imageName: "Bookmark"),
-      MediaName(name: "Popular Books", imageName: "Briefcase"),
+      //MediaName(name: "Popular Books", imageName: "Briefcase"),
       MediaName(name: "New Books", imageName: "Book"),
       MediaName(name: "Authors", imageName: "Mark Twain"),
       MediaName(name: "Genres", imageName: "Comedy"),
@@ -77,7 +78,7 @@ open class BookZvookTableViewController: UITableViewController {
 
         case "New Books":
           performSegue(withIdentifier: "New Books", sender: view)
-        
+
         case "Authors":
           performSegue(withIdentifier: "Authors Letters", sender: view)
 
@@ -116,19 +117,21 @@ open class BookZvookTableViewController: UITableViewController {
           if let destination = segue.destination.getActionController() as? AudioItemsController {
             let configuration = service.getConfiguration()
 
-            let playerSettings = service.audioPlayer.audioPlayerSettings
-
+            let playerSettings = AudioPlayer.readSettings(BookZvookService.audioPlayerPropertiesFileName)
+            destination.playerSettings = playerSettings
+            
             if let dataSource = configuration["dataSource"] as? DataSource,
-              let currentBookId = playerSettings?.items["currentBookId"],
-               let currentBookName = playerSettings?.items["currentBookName"],
-               let currentBookThumb = playerSettings?.items["currentBookThumb"] {
+              let selectedBookId = playerSettings.items["selectedBookId"],
+              let selectedBookName = playerSettings.items["selectedBookName"],
+              let selectedBookThumb = playerSettings.items["selectedBookThumb"] {
 
-              destination.name = currentBookName
-              destination.thumb = currentBookThumb
-              destination.id = currentBookId
-              destination.audioPlayer = service.audioPlayer
-
-              destination.loadAudioItems = BookZvookMediaItemsController.loadAudioItems(currentBookId, dataSource: dataSource)
+              destination.selectedBookId = selectedBookId
+              destination.selectedBookName = selectedBookName
+              destination.selectedBookThumb = selectedBookThumb
+              destination.selectedItemId = Int(playerSettings.items["selectedItemId"]!)
+              destination.currentSongPosition = Float(playerSettings.items["currentSongPosition"]!)!
+              
+              destination.loadAudioItems = BookZvookMediaItemsController.loadAudioItems(selectedBookId, dataSource: dataSource)
             }
           }
 
@@ -144,7 +147,7 @@ open class BookZvookTableViewController: UITableViewController {
 
           destination.configuration = service.getConfiguration()
         }
-        
+
 //      case "Genres":
 //        if let destination = segue.destination.getActionController() as? MediaItemsController,
 //          let view = sender as? MediaNameTableCell,
@@ -157,7 +160,7 @@ open class BookZvookTableViewController: UITableViewController {
 //
 //          destination.configuration = service.getConfiguration()
 //        }
-        
+
         case SearchTableController.SegueIdentifier:
           if let destination = segue.destination.getActionController() as? SearchTableController {
             destination.params["requestType"] = "Search"

@@ -3,25 +3,25 @@ source 'https://github.com/shvets/Specs.git'
 
 use_frameworks!
 
-target 'BookZvookSite_iOS' do
-  platform :ios, '10.0'
+target 'BookZvookSite' do
+  platform :ios, '12.2'
 
   podspec :path => 'BookZvookSite.podspec'
 
-  target 'BookZvookSite_iOSTests' do
+  target 'BookZvookSiteTests' do
     inherit! :search_paths
   end
 end
 
-target 'BookZvookSite_tvOS' do
-  platform :tvos, '10.10'
-
-  podspec :path => 'BookZvookSite.podspec'
-
-  target 'BookZvookSite_tvOSTests' do
-    inherit! :search_paths
-  end
-end
+# target 'BookZvookSite_tvOS' do
+#   platform :tvos, '10.10'
+#
+#   podspec :path => 'BookZvookSite.podspec'
+#
+#   target 'BookZvookSite_tvOSTests' do
+#     inherit! :search_paths
+#   end
+# end
 
 # target 'BookZvookSite_macOS' do
 #   platform :osx, '10.10'

@@ -1,5 +1,5 @@
 import UIKit
-import WebAPI
+import MediaApis
 import TVSetKit
 
 class BookZvookMediaItem: MediaItem {

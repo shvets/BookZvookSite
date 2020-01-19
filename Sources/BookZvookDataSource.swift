@@ -1,13 +1,12 @@
-import WebAPI
+import MediaApis
 import TVSetKit
 import AudioPlayer
-import RxSwift
 
 class BookZvookDataSource: DataSource {
   let service = BookZvookService.shared
 
-  override open func load(params: Parameters) throws -> Observable<[Any]> {
-    var items: Observable<[Any]> = Observable.just([])
+  override open func load(params: Parameters) throws -> [Any] {
+    var items: [Any] = []
 
     let selectedItem = params["selectedItem"] as? Item
 
@@ -21,7 +20,7 @@ class BookZvookDataSource: DataSource {
          let bookmarks = bookmarksManager.bookmarks {
         let data = bookmarks.getBookmarks(pageSize: pageSize, page: currentPage)
 
-        items = Observable.just(adjustItems(data))
+        items = adjustItems(data)
       }
 
     case "History":
@@ -29,22 +28,26 @@ class BookZvookDataSource: DataSource {
          let history = historyManager.history {
         let data = history.getHistoryItems(pageSize: pageSize, page: currentPage)
 
-        items = Observable.just(adjustItems(data))
+        items = adjustItems(data)
       }
 
-    case "Popular Books":
-      items = try service.getPopularBooks().map { result in
-        return self.adjustItems(result)
-      }
+//    case "Popular Books":
+//      items = try service.getPopularBooks().map { result in
+//        return self.adjustItems(result)
+//      }
       
     case "Authors Letters":
-      items = try service.getLetters().map { result in
-        return self.adjustItems(result)
-      }
+      let result = try service.getLetters()
+      
+      items = self.adjustItems(result)
+      
+//      items = try service.getLetters().map { result in
+//        return self.adjustItems(result)
+//      }
       
     case "Authors":
       if let url = params["parentId"] as? String {
-        items = Observable.just(adjustItems(try service.getAuthors(url)))
+        items = adjustItems(try service.getAuthors(url))
       }
 
     case "Author":
@@ -54,34 +57,24 @@ class BookZvookDataSource: DataSource {
         
         let result = try service.getAuthorBooks(url, name: name, page: currentPage, perPage: pageSize)
         
-        let data = result["movies"] as? [Any]
-        
-        items = Observable.just(self.adjustItems(data!))
+        items = self.adjustItems(result.items)
       }
 
     case "New Books":
-      items = try service.getNewBooks(page: currentPage).map { result in
-        let data = result["movies"] as? [Any]
-        
-        let newItems = self.adjustItems(data!)
-        
-        return newItems
-      }
+      let result = try service.getNewBooks(page: currentPage)
+      
+      items = self.adjustItems(result.items)
 
     case "Genres":
       let genres = try service.getGenres()
 
-      items = Observable.just(adjustItems(genres))
+      items = adjustItems(genres)
       
     case "Genre Books":
       if let selectedItem = selectedItem, let url = selectedItem.id {
-        items = try service.getGenreBooks(url, page: currentPage).map { result in
-          let data = result["movies"] as? [Any]
-          
-          let newItems = self.adjustItems(data!)
-          
-          return newItems
-        }
+        let result = try service.getGenreBooks(url, page: currentPage)
+        
+        items = self.adjustItems(result.items)
       }
       
     case "Tracks":
@@ -93,25 +86,21 @@ class BookZvookDataSource: DataSource {
         if playlistUrls.count > version {
           let url = playlistUrls[version]
 
-          items = Observable.just(adjustItems(try service.getAudioTracks(url)))
+          items = adjustItems(try service.getAudioTracks(url))
         }
       }
 
     case "Search":
       if let query = params["query"] as? String {
         if !query.isEmpty {
-          items = try service.search(query, page: currentPage).map { result in
-            let data = result["movies"] as? [Any]
-            
-            let newItems = self.adjustItems(data!)
-            
-            return newItems
-          }
+          let result = try service.search(query, page: currentPage)
+          
+          items = self.adjustItems(result.items)
         }
       }
 
     default:
-      items = Observable.just([])
+      items = []
     }
 
     return items

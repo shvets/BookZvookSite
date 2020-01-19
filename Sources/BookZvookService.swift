@@ -1,5 +1,5 @@
 import Foundation
-import WebAPI
+import MediaApis
 import TVSetKit
 import AudioPlayer
 
@@ -21,10 +21,6 @@ public class BookZvookService {
 
   lazy var bookmarksManager = BookmarksManager(bookmarks)
   lazy var historyManager = HistoryManager(history)
-
-  var audioPlayer: AudioPlayer {
-    return AudioPlayer.getAudioPlayer(BookZvookService.audioPlayerPropertiesFileName)
-  }
 
   var dataSource = BookZvookDataSource()
 
