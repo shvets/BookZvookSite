@@ -24,7 +24,11 @@ open class BookZvookMediaItemsController: MediaItemsController {
 
             destination.selectedBookId = mediaItem.id!
             destination.selectedBookName = mediaItem.name!
-            destination.selectedBookThumb = mediaItem.thumb!
+            
+            if let thumb = mediaItem.thumb {
+              destination.selectedBookThumb = thumb
+            }
+
             destination.selectedItemId = -1
 
             if let url = mediaItem.id {
